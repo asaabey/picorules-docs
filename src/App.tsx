@@ -35,10 +35,10 @@ function App() {
     <div className="docs-app">
       <aside className="sidebar">
         <header className="sidebar__header">
-          <p className="eyebrow">TKC Picorules</p>
-          <h1>Documentation</h1>
+          <p className="eyebrow">Picorules Language</p>
+          <h1>The Picorules Book</h1>
           <p className="subtitle">
-            Summaries derived from the repository&apos;s CLAUDE.md guide.
+            A comprehensive guide to clinical decision support
           </p>
           <input
             className="search"
@@ -72,8 +72,9 @@ function App() {
           </ReactMarkdown>
         </article>
         <footer className="footer">
-          Generated from `CLAUDE.md`. Last updated today—refresh from source as
-          the repository evolves.
+          The Picorules Book — A complete reference for clinical decision support development.
+          <br />
+          Learn more about implementing Picorules in your organization.
         </footer>
       </main>
     </div>

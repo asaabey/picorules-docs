@@ -1,7 +1,10 @@
-import overview from './overview.md?raw';
-import language from './language.md?raw';
-import ruleblocks from './ruleblocks.md?raw';
-import templatesAndDevelopment from './templates-and-development.md?raw';
+import introduction from './01-introduction.md?raw';
+import tutorial from './02-tutorial.md?raw';
+import languageReference from './03-language-reference.md?raw';
+import eadvModel from './04-eadv-model.md?raw';
+import functionsReference from './05-functions-reference.md?raw';
+import jinja2Templating from './06-jinja2-templating.md?raw';
+import examples from './07-examples.md?raw';
 
 export interface DocPage {
   id: string;
@@ -12,27 +15,45 @@ export interface DocPage {
 
 export const docs: DocPage[] = [
   {
-    id: 'overview',
-    title: 'Picorules Overview',
-    description: 'High-level motivation, repository layout, and core architecture concepts.',
-    content: overview,
+    id: 'introduction',
+    title: 'Introduction',
+    description: 'What is Picorules and why it exists',
+    content: introduction,
   },
   {
-    id: 'language',
-    title: 'Language & Syntax',
-    description: 'Statement types, directives, and idiomatic Picorules patterns.',
-    content: language,
+    id: 'tutorial',
+    title: 'Tutorial',
+    description: 'Step-by-step guide to writing your first ruleblocks',
+    content: tutorial,
   },
   {
-    id: 'ruleblocks',
-    title: 'Working with Ruleblocks',
-    description: 'Naming conventions, update workflows, and citation usage.',
-    content: ruleblocks,
+    id: 'language-reference',
+    title: 'Language Reference',
+    description: 'Complete syntax specification for functional and conditional statements',
+    content: languageReference,
   },
   {
-    id: 'templates',
-    title: 'Templates & Development Notes',
-    description: 'Template pack structure plus operational guardrails for rollouts.',
-    content: templatesAndDevelopment,
+    id: 'eadv-model',
+    title: 'EADV Model',
+    description: 'Understanding the Entity-Attribute-Date-Value data structure',
+    content: eadvModel,
+  },
+  {
+    id: 'functions-reference',
+    title: 'Functions Reference',
+    description: 'Complete reference of all available functions and operators',
+    content: functionsReference,
+  },
+  {
+    id: 'jinja2-templating',
+    title: 'Jinja2 Templating',
+    description: 'Creating dashboard templates with Jinja2 syntax',
+    content: jinja2Templating,
+  },
+  {
+    id: 'examples',
+    title: 'Examples & Cookbook',
+    description: 'Real-world clinical patterns and complete ruleblock examples',
+    content: examples,
   },
 ];
