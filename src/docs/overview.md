@@ -1,6 +1,6 @@
 # Picorules Overview
 
-Picorules is a lightweight domain-specific language used at TKC (The Kidney Centre) to describe clinical decision support logic that ultimately runs as SQL inside the EADV (Entity-Attribute-Date-Value) model. Each Picorules statement compiles to CTE-driven SQL that returns one row per patient (identified by `eid`) while hiding manual `SELECT`, `JOIN`, and windowing boilerplate.
+Picorules is a lightweight domain-specific language used at TKC (Territory Kidney Care) to describe clinical decision support logic that ultimately runs as SQL inside the EADV (Entity-Attribute-Date-Value) model. Each Picorules statement compiles to CTE-driven SQL that returns one row per patient (identified by `eid`) while hiding manual `SELECT`, `JOIN`, and windowing boilerplate.
 
 ## Key Capabilities
 

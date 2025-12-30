@@ -6,7 +6,7 @@ Picorules is a domain-specific language (DSL) designed for clinical decision sup
 
 Think of Picorules as a bridge between clinical reasoning and database queries—you describe *what* clinical insights you want to derive, and Picorules generates the *how* in optimized SQL.
 
-**Note:** This documentation references The Kidney Centre (TKC) as an example implementation, but Picorules is designed to work with any clinical system using an EADV data model.
+**Note:** This documentation references Territory Kidney Care (TKC) as an example implementation, but Picorules is designed to work with any clinical system using an EADV data model.
 
 ## The Problem We're Solving
 

@@ -185,6 +185,44 @@ Potential additions:
 - ✅ Includes real-world examples
 - ✅ Successfully builds and runs
 
+## Latest Update: GraphQL-Inspired Design & Theme Toggle (December 31, 2025)
+
+### Design Overhaul
+Completely redesigned the documentation site to match GraphQL.org's modern, professional aesthetic:
+
+**Typography & Fonts:**
+- Replaced default fonts with Google Fonts: Inter (body) and JetBrains Mono (code)
+- Improved letter-spacing, line-height, and font weights
+- Professional -0.02em letter-spacing on headings
+
+**Color System:**
+- Implemented CSS custom properties for comprehensive theming
+- Light theme: Warm off-white backgrounds (rgb(251, 251, 249))
+- Dark theme: Rich charcoal backgrounds (rgb(15, 15, 12))
+- Accent color: Purple hue (280deg) with 70% saturation
+- Smooth color transitions across all elements
+
+**Theme Toggle:**
+- Added sun/moon icon button in top right corner
+- Respects system color scheme preference (`prefers-color-scheme`)
+- Persists user preference in localStorage
+- Smooth theme transitions with CSS variables
+- Positioned alongside GitHub link
+
+**UI Improvements:**
+- Refined button styles with subtle borders and hover effects
+- Enhanced code blocks with better contrast and borders
+- Improved search input with focus states
+- Updated navigation items with cleaner styling
+- Better spacing and padding throughout
+
+**Files Modified:**
+- [index.html](index.html) - Added Google Fonts (Inter, JetBrains Mono)
+- [src/App.css](src/App.css) - Complete CSS rewrite with theme variables
+- [src/App.tsx](src/App.tsx) - Theme toggle component with localStorage persistence
+
+**Build Status:** ✅ Successfully builds (7.01 kB CSS, 473 kB JS)
+
 ## Completion Date
 December 31, 2025
 
@@ -203,5 +241,7 @@ The documentation follows industry best practices with:
 - Code examples for every concept
 - Best practices and anti-patterns
 - Complete API/syntax reference
+- **Modern, accessible design inspired by GraphQL.org**
+- **Dark/light theme support with system preference detection**
 
-The structure mirrors successful technical documentation like PRQL, Rust Book, and MDN, making it immediately familiar to developers while remaining accessible to clinical users.
+The structure mirrors successful technical documentation like PRQL, GraphQL, Rust Book, and MDN, making it immediately familiar to developers while remaining accessible to clinical users.
