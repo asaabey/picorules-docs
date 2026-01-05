@@ -72,6 +72,27 @@ body {
   transition: background-color 0.2s ease, border-color 0.2s ease;
 }
 
+/* Back to Home Button */
+.back-to-home {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 0.5rem;
+  border: 1px solid var(--border-color);
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-bottom: 1rem;
+}
+
+.back-to-home:hover {
+  color: var(--accent-color);
+  border-color: var(--accent-color);
+}
+
 .logo-section {
   display: flex;
   align-items: center;

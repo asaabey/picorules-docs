@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Repository Overview
 
-This repository contains the **Picorules Documentation Site**, a React-based web application that provides interactive documentation for the Picorules clinical decision support language used in the TKC (The Kidney Centre) system.
+This repository contains the **Picorules Documentation Site**, a React-based web application that provides interactive documentation for the Picorules clinical decision support language used in the TKC (Territory Kidney Care) system.
 
 ### Purpose
 

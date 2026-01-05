@@ -3,10 +3,12 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { docs } from './docs';
 import { getBuildNumber } from './buildInfo';
+import { LandingPage } from './LandingPage';
+import { useHashRouter } from './hooks/useHashRouter';
 import './App.css';
 
 function App() {
-  const [selectedDocId, setSelectedDocId] = useState(docs[0].id);
+  const { route, navigate } = useHashRouter();
   const [query, setQuery] = useState('');
   const [theme, setTheme] = useState<'light' | 'dark'>(() => {
     // Initialize theme from localStorage or system preference
@@ -20,6 +22,10 @@ function App() {
     return 'light';
   });
 
+  // Derive state from route
+  const showLanding = route.type === 'landing';
+  const selectedDocId = route.type === 'doc' ? route.docId : docs[0].id;
+
   const filteredDocs = useMemo(() => {
     const q = query.trim().toLowerCase();
     if (!q) return docs;
@@ -30,15 +36,16 @@ function App() {
     );
   }, [query]);
 
+  // Auto-select first visible doc if current selection is filtered out
   useEffect(() => {
-    if (filteredDocs.length === 0) {
+    if (showLanding || filteredDocs.length === 0) {
       return;
     }
     const stillVisible = filteredDocs.some((doc) => doc.id === selectedDocId);
     if (!stillVisible) {
-      setSelectedDocId(filteredDocs[0].id);
+      navigate({ type: 'doc', docId: filteredDocs[0].id });
     }
-  }, [filteredDocs, selectedDocId]);
+  }, [filteredDocs, selectedDocId, showLanding, navigate]);
 
   // Apply theme to document and save to localStorage
   useEffect(() => {
@@ -51,17 +58,68 @@ function App() {
     localStorage.setItem('theme', theme);
   }, [theme]);
 
+  // Scroll to top on route change
+  useEffect(() => {
+    if (route.type === 'doc') {
+      window.scrollTo(0, 0);
+    }
+  }, [route]);
+
+  // Update document title based on current route
+  useEffect(() => {
+    if (route.type === 'landing') {
+      document.title = 'Picorules - Clinical Decision Support Language';
+    } else {
+      const doc = docs.find((d) => d.id === route.docId);
+      document.title = doc
+        ? `${doc.title} | The Picorules Book`
+        : 'The Picorules Book';
+    }
+  }, [route]);
+
   const toggleTheme = () => {
     setTheme((prev) => (prev === 'light' ? 'dark' : 'light'));
+  };
+
+  const handleEnterDocs = () => {
+    navigate({ type: 'doc', docId: 'introduction' });
+  };
+
+  const handleBackToHome = () => {
+    navigate({ type: 'landing' });
+  };
+
+  const handleSelectDoc = (docId: string) => {
+    navigate({ type: 'doc', docId });
   };
 
   const activeDoc =
     docs.find((doc) => doc.id === selectedDocId) ?? docs[0];
 
+  // Show landing page
+  if (showLanding) {
+    return (
+      <LandingPage
+        onEnterDocs={handleEnterDocs}
+        theme={theme}
+        onToggleTheme={toggleTheme}
+      />
+    );
+  }
+
   return (
     <div className="docs-app">
       <aside className="sidebar">
         <header className="sidebar__header">
+          <button
+            className="back-to-home"
+            onClick={handleBackToHome}
+            title="Back to home"
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M19 12H5M12 19l-7-7 7-7" />
+            </svg>
+          </button>
           <div className="logo-section">
             <img
               src="/favicon-32x32.png"
@@ -93,7 +151,7 @@ function App() {
               className={`nav__item ${
                 doc.id === activeDoc.id ? 'nav__item--active' : ''
               }`}
-              onClick={() => setSelectedDocId(doc.id)}
+              onClick={() => handleSelectDoc(doc.id)}
             >
               <span className="nav__title">{doc.title}</span>
               <span className="nav__description">{doc.description}</span>
@@ -147,7 +205,7 @@ function App() {
             )}
           </button>
           <a
-            href="https://github.com/asaabey/tkc-picorules-rules"
+            href="https://github.com/asaabey/picorules-docs"
             target="_blank"
             rel="noopener noreferrer"
             className="github-link"
