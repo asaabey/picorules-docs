@@ -116,10 +116,22 @@ How to aggregate multiple rows per patient:
 | Function | Returns | Use Case |
 |----------|---------|----------|
 | `.last()` | Most recent value | Latest lab result |
-| `.max()` | Maximum value | Highest creatinine, most recent date |
+| `.first()` | Earliest value | Baseline measurement |
+| `.count()` | Number of occurrences | Visit frequency |
+| `.sum()` | Sum of values | Total doses |
+| `.avg()` | Average value | Mean blood pressure |
 | `.min()` | Minimum value | Lowest eGFR |
+| `.max()` | Maximum value | Highest creatinine |
+| `.median()` | Median value | Baseline creatinine |
+| `.distinct_count()` | Unique value count | Distinct visit dates |
 | `.lastdv()` | Last date-value pair | When you need both |
+| `.firstdv()` | First date-value pair | Baseline with date |
+| `.maxldv()` | Max value with date | Peak value timing |
+| `.minldv()` | Min value with date | Nadir timing |
+| `.exists()` | 1 if exists, 0 if not | Comorbidity check |
 | `.bind()` | Value from another ruleblock | Cross-ruleblock reference |
+
+> **Note:** See the [Functions Reference](#functions-reference) for complete documentation of all functions including statistical functions (`.regr_slope()`, `.stats_mode()`) and advanced analysis functions (`.temporal_regularity()`).
 
 ### Functional Statement Examples
 
@@ -739,9 +751,18 @@ These words have special meaning in Picorules:
 **Operators:**
 - `and`, `or`, `not`
 
-**Functions:**
-- `last`, `max`, `min`, `lastdv`, `bind`
-- `coalesce`, `least_date`, `greatest_date`
+**Fetch Functions:**
+- Basic: `last`, `first`, `count`
+- Aggregation: `sum`, `avg`, `min`, `max`, `median`, `distinct_count`
+- Date-Value: `lastdv`, `firstdv`, `maxldv`, `minldv`, `minfdv`
+- Statistical: `regr_slope`, `regr_intercept`, `regr_r2`, `stats_mode`
+- Advanced: `max_neg_delta_dv`, `temporal_regularity`, `exists`, `nth`
+- Serialization: `serialize`, `serializedv`, `serializedv2`
+- Cross-ruleblock: `bind`
+- Filter: `where`
+
+**Standard SQL Functions:**
+- `coalesce`, `least_date`, `greatest_date`, `least`, `greatest`
 - `abs`, `round`
 
 **Date/time:**
