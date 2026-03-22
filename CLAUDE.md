@@ -46,6 +46,10 @@ Current docs (numbered for ordering):
 
 Plain CSS with BEM-like naming: `index.css` (global/reset), `App.css` (docs reader), `LandingPage.css` (landing page). Dark mode via `.dark` class on `<html>`.
 
+## Picorules Language Reference
+
+A combined single-file reference for AI agents is available at `picorules-language-reference.md` in the repo root. It contains the complete language specification, syntax, functions, EADV model, templating, and examples.
+
 ## Important Constraints
 
 - **Do not treat this repo as the source of truth** for Picorules documentation. Update the parent repo's CLAUDE.md first, then regenerate the markdown files here.
