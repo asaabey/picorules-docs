@@ -4,339 +4,50 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Repository Overview
 
-This repository contains the **Picorules Documentation Site**, a React-based web application that provides interactive documentation for the Picorules clinical decision support language used in the TKC (Territory Kidney Care) system.
+**Picorules Documentation Site** — a React + TypeScript SPA that renders interactive documentation for the Picorules clinical decision support language. This is a **visualization layer only**; the source of truth for documentation content lives in the parent `tkc-picorules-rules` repository's CLAUDE.md.
 
-### Purpose
-
-This is a **documentation frontend** that presents Picorules language specifications, syntax reference, and development best practices in an accessible, searchable web interface. The documentation content is derived from the parent `tkc-picorules-rules` repository's CLAUDE.md file.
-
-### Technology Stack
-
-- **Framework**: React 19.2.0 with TypeScript 5.9.3
-- **Build Tool**: Vite 7.2.4
-- **Key Dependencies**:
-  - `react-markdown` (v10.1.0) - Markdown rendering with React components
-  - `remark-gfm` (v4.0.1) - GitHub Flavored Markdown support
-- **Development Tools**:
-  - ESLint 9.39.1 - Code quality
-  - TypeScript ESLint - Type-safe linting
-  - Vite plugin for React with Fast Refresh
-
-## Repository Structure
-
-```
-picorules-docs/
-├── src/
-│   ├── docs/                    # Documentation content
-│   │   ├── index.ts             # Documentation registry & types
-│   │   ├── overview.md          # Picorules overview & architecture
-│   │   ├── language.md          # Language syntax & patterns
-│   │   ├── ruleblocks.md        # Working with ruleblocks
-│   │   └── templates-and-development.md  # Templates & dev notes
-│   ├── App.tsx                  # Main application component
-│   ├── main.tsx                 # React entry point
-│   ├── App.css                  # Application styles
-│   ├── index.css                # Global styles
-│   └── assets/                  # Static assets (icons, images)
-├── public/                      # Public static files
-│   └── vite.svg                 # Vite logo
-├── dist/                        # Build output (generated)
-├── node_modules/                # Dependencies (generated)
-├── index.html                   # HTML entry point
-├── vite.config.ts               # Vite configuration
-├── tsconfig.json                # TypeScript base config
-├── tsconfig.app.json            # App-specific TypeScript config
-├── tsconfig.node.json           # Node-specific TypeScript config
-├── eslint.config.js             # ESLint configuration
-├── package.json                 # Project metadata & dependencies
-└── package-lock.json            # Locked dependency versions
-```
-
-## Application Architecture
-
-### Component Structure
-
-#### Main Application ([App.tsx](src/App.tsx))
-The `App` component provides the core documentation browser interface:
-
-**Features**:
-1. **Sidebar Navigation**:
-   - Displays all documentation topics
-   - Search/filter functionality
-   - Active topic highlighting
-
-2. **Content Area**:
-   - Renders selected documentation as markdown
-   - Uses `react-markdown` with GFM support
-   - Displays footer with metadata
-
-**State Management**:
-- `selectedDocId` - Currently selected documentation page
-- `query` - Search filter text
-- `filteredDocs` - Computed docs matching search query
-
-**Key Behaviors**:
-- Auto-switches to first visible doc if current selection is filtered out
-- Real-time search filtering on title and description
-- Markdown rendering with GitHub Flavored Markdown extensions
-
-### Documentation Registry ([src/docs/index.ts](src/docs/index.ts))
-
-**DocPage Interface**:
-```typescript
-interface DocPage {
-  id: string;           // Unique identifier
-  title: string;        // Display title
-  description: string;  // Short summary for sidebar
-  content: string;      // Full markdown content
-}
-```
-
-**Documentation Pages**:
-1. **overview** - "Picorules Overview"
-   - High-level motivation, repository layout, core architecture
-
-2. **language** - "Language & Syntax"
-   - Statement types, compiler directives, idiomatic patterns
-
-3. **ruleblocks** - "Working with Ruleblocks"
-   - Naming conventions, update workflows, citation usage
-
-4. **templates** - "Templates & Development Notes"
-   - Template pack structure, development guardrails
-
-**Import Pattern**: Documentation files are imported using Vite's `?raw` suffix to load markdown as string literals:
-```typescript
-import overview from './overview.md?raw';
-```
-
-## Documentation Content
-
-The markdown files in [src/docs/](src/docs/) are structured to cover four main areas:
-
-### 1. Overview ([overview.md](src/docs/overview.md))
-- What Picorules is and why it exists
-- Repository layout of the parent `tkc-picorules-rules` repo
-- EADV model architecture concepts
-- Compilation flow and ruleblock chaining
-
-### 2. Language & Syntax ([language.md](src/docs/language.md))
-- Two statement types: Functional (`=>`) and Conditional (`:`)
-- Compiler directives (`#define_ruleblock`, `#define_attribute`, `#doc`)
-- Common Picorules patterns and idioms
-- Special operators and functions
-
-### 3. Ruleblocks ([ruleblocks.md](src/docs/ruleblocks.md))
-- File and output naming conventions
-- Common ruleblock types (global, diagnostic, risk assessment)
-- Variable naming conventions (`_ld`, `_last`, `is_*`, `cd_*`)
-- Citation and documentation workflow
-- Update workflow steps
-
-### 4. Templates & Development ([templates-and-development.md](src/docs/templates-and-development.md))
-- Template pack structure (`.json` + `.txt` pairs)
-- Reusable frame templates
-- Development principles and best practices
-- Git workflow patterns
-- Tooling integration
-
-## Development Workflow
-
-### Available Scripts
+## Commands
 
 ```bash
-# Start development server with hot reload
-npm run dev
-
-# Build for production
-npm run build
-
-# Preview production build locally
-npm run preview
-
-# Run ESLint
-npm run lint
+npm run dev       # Start dev server (localhost:5173, HMR enabled)
+npm run build     # TypeScript check + Vite production build → dist/
+npm run lint      # ESLint
+npm run preview   # Serve production build locally
 ```
 
-### Development Server
-- Runs on `http://localhost:5173` by default (Vite default)
-- Hot Module Replacement (HMR) enabled
-- Fast refresh for React components
+No test framework is configured.
 
-### Build Process
-1. TypeScript compilation (`tsc -b`)
-2. Vite bundling and optimization
-3. Output to `dist/` directory
-4. Minified and optimized for production
+## Architecture
 
-## Styling Approach
+### Routing & Pages
 
-The application uses CSS with BEM-like naming conventions:
+The app uses a custom hash-based router (`src/hooks/useHashRouter.ts`) with two route types:
+- **Landing page** (`/` or no hash) — rendered by `LandingPage.tsx`, a marketing-style page with IDE and SDK sections
+- **Documentation reader** (`#/{docId}`) — rendered by `App.tsx`, sidebar + markdown content viewer
 
-**Key Classes**:
-- `.docs-app` - Main application container
-- `.sidebar` - Left navigation panel
-  - `.sidebar__header` - Header with search
-  - `.nav` - Navigation list
-  - `.nav__item` - Individual navigation items
-  - `.nav__item--active` - Active state
-- `.content` - Main content area
-- `.footer` - Footer with metadata
+Legacy `#doc-{id}` URLs are auto-redirected to `#/{id}`.
 
-**Style Files**:
-- [index.css](src/index.css) - Global styles and CSS reset
-- [App.css](src/App.css) - Component-specific styles
+### Documentation Content Pipeline
 
-## Working with This Repository
+Markdown files in `src/docs/` are imported as raw strings via Vite's `?raw` suffix and registered in `src/docs/index.ts` as a `DocPage[]` array. The `DocPage` interface defines `id`, `title`, `description`, and `content` fields.
 
-### Adding New Documentation Pages
+Current docs (numbered for ordering):
+`01-introduction.md` through `08-developers.md`
 
-1. **Create the markdown file** in [src/docs/](src/docs/):
-   ```markdown
-   # Page Title
-   Content here...
-   ```
+**To add a new doc page**: create the `.md` file, import it with `?raw` in `src/docs/index.ts`, and add an entry to the `docs` array.
 
-2. **Import in index.ts**:
-   ```typescript
-   import newPage from './new-page.md?raw';
-   ```
+### Key Components
 
-3. **Add to docs array**:
-   ```typescript
-   {
-     id: 'new-page',
-     title: 'Page Title',
-     description: 'Short description for sidebar',
-     content: newPage,
-   }
-   ```
+- **`App.tsx`** — Main docs reader: sidebar navigation with search filtering, `react-markdown` content rendering (with `remark-gfm`), dark/light theme toggle (persisted to localStorage), build number display
+- **`LandingPage.tsx`** — Standalone landing page component
+- **`src/buildInfo.ts`** — Manual build number in `{year}.{month}.{build}` format
 
-### Updating Existing Documentation
+### Styling
 
-1. Edit the relevant `.md` file in [src/docs/](src/docs/)
-2. Save the file - HMR will auto-refresh in development
-3. No code changes needed in TypeScript files
+Plain CSS with BEM-like naming: `index.css` (global/reset), `App.css` (docs reader), `LandingPage.css` (landing page). Dark mode via `.dark` class on `<html>`.
 
-### Modifying Styles
+## Important Constraints
 
-1. For global styles: Edit [index.css](src/index.css)
-2. For component styles: Edit [App.css](src/App.css)
-3. Follow existing BEM-like naming patterns
-
-### TypeScript Configuration
-
-The project uses three TypeScript configs:
-- [tsconfig.json](tsconfig.json) - Base configuration
-- [tsconfig.app.json](tsconfig.app.json) - Application source code
-- [tsconfig.node.json](tsconfig.node.json) - Vite config and build scripts
-
-## Important Notes
-
-### Content Source
-- **DO NOT** treat this repository as the source of truth for Picorules documentation
-- Content is **derived from** the parent `tkc-picorules-rules` repository's CLAUDE.md
-- This is a **visualization layer** only
-- When documentation needs updating, update the source CLAUDE.md first, then regenerate these markdown files
-
-### Relationship to Parent Repository
-- The parent repository is `/home/asaabey/projects/tkc/tkc-picorules-rules`
-- This docs site is a sub-project within that repository
-- The markdown files should be kept in sync with the parent CLAUDE.md
-
-### Build Output
-- The `dist/` directory is generated and should not be committed
-- The `node_modules/` directory is managed by npm
-- Both are excluded in [.gitignore](.gitignore)
-
-### Vite Configuration
-- Uses default Vite React plugin ([vite.config.ts](vite.config.ts))
-- Minimal configuration - relies on Vite defaults
-- Build output optimized automatically
-
-### Markdown Rendering
-- Uses `react-markdown` with `remark-gfm` plugin
-- Supports GitHub Flavored Markdown features:
-  - Tables
-  - Task lists
-  - Strikethrough
-  - Autolinks
-  - Code blocks with syntax highlighting
-
-## Common Modifications
-
-### Changing the Sidebar Title
-Edit [App.tsx](src/App.tsx) line 38-42:
-```tsx
-<p className="eyebrow">TKC Picorules</p>
-<h1>Documentation</h1>
-<p className="subtitle">
-  Summaries derived from the repository's CLAUDE.md guide.
-</p>
-```
-
-### Customizing Search Behavior
-Edit the `filteredDocs` useMemo in [App.tsx](src/App.tsx) lines 11-19 to change search logic.
-
-### Adding Footer Information
-Edit [App.tsx](src/App.tsx) lines 74-77:
-```tsx
-<footer className="footer">
-  Generated from `CLAUDE.md`. Last updated today—refresh from source as
-  the repository evolves.
-</footer>
-```
-
-## Deployment
-
-### Static Site Hosting
-The built site (in `dist/`) is a static SPA and can be deployed to:
-- GitHub Pages
-- Netlify
-- Vercel
-- Any static hosting service
-
-### Build for Deployment
-```bash
-npm run build
-# dist/ directory now contains deployable assets
-```
-
-### Preview Locally
-```bash
-npm run preview
-# Serves the built dist/ directory
-```
-
-## Troubleshooting
-
-### Build Errors
-- Ensure TypeScript has no errors: `npx tsc --noEmit`
-- Check ESLint: `npm run lint`
-- Verify all markdown files exist and are properly imported
-
-### HMR Not Working
-- Restart the dev server
-- Clear browser cache
-- Check Vite server is running on correct port
-
-### Markdown Not Rendering
-- Verify markdown file is imported with `?raw` suffix
-- Check `react-markdown` and `remark-gfm` are installed
-- Ensure markdown content is valid
-
-## Git Workflow
-
-This repository appears to be a single-commit initial setup. When making changes:
-1. Create feature branches for significant changes
-2. Keep commits focused and descriptive
-3. Test build before committing (`npm run build`)
-4. Run linting before committing (`npm run lint`)
-
-## References
-
-- [Vite Documentation](https://vite.dev/)
-- [React Documentation](https://react.dev/)
-- [react-markdown Documentation](https://github.com/remarkjs/react-markdown)
-- [remark-gfm Documentation](https://github.com/remarkjs/remark-gfm)
-- Parent repository CLAUDE.md: `/home/asaabey/projects/tkc/tkc-picorules-rules/CLAUDE.md`
+- **Do not treat this repo as the source of truth** for Picorules documentation. Update the parent repo's CLAUDE.md first, then regenerate the markdown files here.
+- Old doc files (`overview.md`, `language.md`, `ruleblocks.md`, `templates-and-development.md`) still exist in `src/docs/` but are **not imported** — the active docs are the numbered `01-` through `08-` files.
+- `dist/` is gitignored build output.
