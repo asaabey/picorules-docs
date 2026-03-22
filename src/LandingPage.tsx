@@ -562,6 +562,14 @@ needs_workup : {
             <button onClick={onEnterDocs} className="landing-footer__link-btn">
               Documentation
             </button>
+            <a
+              href="https://raw.githubusercontent.com/asaabey/picorules-docs/master/picorules-language-reference.md"
+              target="_blank"
+              rel="noopener noreferrer"
+              title="Single-file Picorules language reference for AI agents and LLMs"
+            >
+              For AI Agents
+            </a>
           </div>
         </div>
       </footer>
