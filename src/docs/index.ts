@@ -6,6 +6,7 @@ import functionsReference from './05-functions-reference.md?raw';
 import jinja2Templating from './06-jinja2-templating.md?raw';
 import examples from './07-examples.md?raw';
 import developers from './08-developers.md?raw';
+import ecosystem from './09-ecosystem.md?raw';
 
 export interface DocPage {
   id: string;
@@ -56,6 +57,12 @@ export const docs: DocPage[] = [
     title: 'Examples & Cookbook',
     description: 'Real-world clinical patterns and complete ruleblock examples',
     content: examples,
+  },
+  {
+    id: 'ecosystem',
+    title: 'SDK & Ecosystem',
+    description: 'npm packages, JS evaluator, FHIR adapter, and data adapters',
+    content: ecosystem,
   },
   {
     id: 'developers',
