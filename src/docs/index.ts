@@ -7,6 +7,10 @@ import jinja2Templating from './06-jinja2-templating.md?raw';
 import examples from './07-examples.md?raw';
 import developers from './08-developers.md?raw';
 import ecosystem from './09-ecosystem.md?raw';
+import architecture from './10-architecture.md?raw';
+import fhirIntegration from './11-fhir-integration.md?raw';
+import openehrIntegration from './12-openehr-integration.md?raw';
+import picorulesStudio from './13-picorules-studio.md?raw';
 
 export interface DocPage {
   id: string;
@@ -59,15 +63,39 @@ export const docs: DocPage[] = [
     content: examples,
   },
   {
+    id: 'architecture',
+    title: 'Architecture',
+    description: 'Transport-agnostic three-layer model, DataAdapter interface, and comparison with CDS standards',
+    content: architecture,
+  },
+  {
+    id: 'fhir-integration',
+    title: 'FHIR R4 Integration',
+    description: 'FHIR data adapter, smart fetch, CDS Hooks prefetch, SMART on FHIR apps',
+    content: fhirIntegration,
+  },
+  {
+    id: 'openehr-integration',
+    title: 'openEHR Integration',
+    description: 'AQL-based adapter for openEHR CDRs — EHRbase, Better Platform, DIPS',
+    content: openehrIntegration,
+  },
+  {
+    id: 'picorules-studio',
+    title: 'Picorules Studio',
+    description: 'Web IDE for rule authoring, SQL compilation, mock data, and execution',
+    content: picorulesStudio,
+  },
+  {
     id: 'ecosystem',
     title: 'SDK & Ecosystem',
-    description: 'npm packages, JS evaluator, FHIR adapter, and data adapters',
+    description: 'npm packages, data adapters, tools, and source repositories',
     content: ecosystem,
   },
   {
     id: 'developers',
     title: 'Developers',
-    description: 'Core team, contributing guidelines, and project architecture',
+    description: 'Core team, contributing guidelines, and project history',
     content: developers,
   },
 ];

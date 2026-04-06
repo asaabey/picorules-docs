@@ -1,15 +1,16 @@
 # SDK & Ecosystem
 
-Picorules is available as a set of npm packages for building clinical decision support applications in JavaScript and TypeScript. The packages support two execution modes: compiling to SQL for population-scale batch analytics, or evaluating directly in JavaScript for single-patient real-time use.
+Picorules is available as a set of npm packages for building clinical decision support applications in JavaScript and TypeScript. The packages support three execution modes: compiling to SQL for population-scale batch analytics, evaluating directly in JavaScript against FHIR R4 data, or querying openEHR Clinical Data Repositories via AQL.
 
 ## Packages
 
-| Package | Version | Description |
-|---------|---------|-------------|
-| [picorules-compiler-js-core](https://www.npmjs.com/package/picorules-compiler-js-core) | 1.1.x | Compiler + JS runtime evaluator |
-| [picorules-adapter-fhir](https://www.npmjs.com/package/picorules-adapter-fhir) | 0.1.x | FHIR R4 data adapter |
-| [picorules-compiler-js-eadv-mocker](https://www.npmjs.com/package/picorules-compiler-js-eadv-mocker) | 0.1.x | Mock EADV data generator for testing |
-| [picorules-compiler-js-db-manager](https://www.npmjs.com/package/picorules-compiler-js-db-manager) | - | Database execution manager |
+| Package | Description |
+|---------|-------------|
+| [picorules-compiler-js-core](https://www.npmjs.com/package/picorules-compiler-js-core) | Compiler + JS runtime evaluator — parser, linker, multi-dialect SQL generator, and in-memory evaluator |
+| [picorules-adapter-fhir](https://www.npmjs.com/package/picorules-adapter-fhir) | FHIR R4 data adapter — terminology mapping, smart fetch introspection, CDS Hooks prefetch generation, output mapper |
+| [picorules-adapter-openehr](https://www.npmjs.com/package/picorules-adapter-openehr) | openEHR data adapter — AQL query builder, archetype mapping, CDR integration |
+| [picorules-compiler-js-eadv-mocker](https://www.npmjs.com/package/picorules-compiler-js-eadv-mocker) | Mock EADV data generator — synthetic patient data for testing |
+| [picorules-compiler-js-db-manager](https://www.npmjs.com/package/picorules-compiler-js-db-manager) | Database execution manager — run compiled SQL against PostgreSQL/Oracle/MSSQL |
 
 ## Architecture
 
@@ -24,20 +25,18 @@ Picorules is available as a set of npm packages for building clinical decision s
                     │    Transform → Filter │
                     └──────────┬───────────┘
                                │
-               ┌───────────────┴───────────────┐
-               │                               │
-    ┌──────────▼──────────┐         ┌──────────▼──────────┐
-    │   Compile to SQL     │         │   Evaluate in JS     │
-    │                      │         │                      │
-    │   Oracle / MSSQL /   │         │   EADV data or       │
-    │   PostgreSQL         │         │   FHIR R4 Bundles    │
-    │                      │         │                      │
-    │   Population batch   │         │   Single-patient     │
-    │   analytics          │         │   real-time CDS      │
-    └──────────────────────┘         └──────────────────────┘
+          ┌────────────────────┼────────────────────┐
+          │                    │                     │
+┌─────────▼─────────┐ ┌───────▼────────┐ ┌─────────▼─────────┐
+│  Compile to SQL    │ │ Evaluate (FHIR)│ │ Evaluate (openEHR)│
+│                    │ │                │ │                    │
+│  Oracle / MSSQL /  │ │ FHIR R4 Bundle │ │ AQL via REST API  │
+│  PostgreSQL        │ │ + smart fetch  │ │ EHRbase / Better   │
+│                    │ │                │ │                    │
+│  Population batch  │ │ Single-patient │ │ Single-patient     │
+│  analytics         │ │ real-time CDS  │ │ real-time CDS      │
+└────────────────────┘ └────────────────┘ └────────────────────┘
 ```
-
-The compiler and evaluator share the same parser, linker, and transformer. The parsed AST is dialect-agnostic — it feeds into either the SQL code generator (existing) or the JavaScript runtime evaluator (new in v1.1).
 
 ## Core Package: picorules-compiler-js-core
 
@@ -73,19 +72,15 @@ Best for point-of-care CDS, SMART on FHIR apps, browser-based tools, and serverl
 ```typescript
 import { parse, evaluate, EadvDataAdapter } from 'picorules-compiler-js-core';
 
-// Parse the ruleblock (can be done once and cached)
 const parsed = parse([{ name: 'ckd', text: ruleblockSource, isActive: true }]);
 
-// Provide patient data
 const adapter = new EadvDataAdapter([
   { eid: 1, att: 'lab_bld_egfr', dt: '2024-06-01', val: 44 },
   { eid: 1, att: 'lab_bld_egfr', dt: '2024-01-15', val: 48 },
-  { eid: 1, att: 'lab_bld_egfr', dt: '2023-06-01', val: 52 },
 ]);
 
-// Evaluate — returns results in ~1ms
 const result = evaluate(parsed[0], adapter);
-// { egfr_last: 44, egfr_slope: -0.018, ckd_stage: 4, ... }
+// { egfr_last: 44, ckd_stage: 4, ... }
 ```
 
 ### Multi-Ruleblock Evaluation
@@ -93,7 +88,7 @@ const result = evaluate(parsed[0], adapter);
 When ruleblocks depend on each other via `.bind()`, use `evaluateAll()` which handles dependency ordering automatically:
 
 ```typescript
-import { parse, evaluateAll, EadvDataAdapter } from 'picorules-compiler-js-core';
+import { parse, evaluateAll } from 'picorules-compiler-js-core';
 
 const parsed = parse([
   { name: 'egfr_metrics', text: egfrSource, isActive: true },
@@ -105,153 +100,7 @@ const results = evaluateAll(parsed, adapter);
 // results.get('ckd')          = { ckd_stage: 4, has_ckd: 1 }
 ```
 
-### Expression Functions
-
-All SQL functions used in conditional statements are supported in the JS evaluator:
-
-| Category | Functions |
-|----------|-----------|
-| Math | `round()`, `ln()`, `exp()`, `power()`, `abs()`, `ceil()`, `log()`, `sqrt()` |
-| Null handling | `nvl()`, `coalesce()` |
-| Comparison | `greatest()`, `least()`, `greatest_date()`, `least_date()` |
-| String | `substr()`, `to_number()`, `to_char()` |
-| Date | `sysdate`, `extract(year/month/day from date)`, `to_date()` |
-| Date arithmetic | `date - date` → days, `date ± number` → new date |
-| Operators | `and`, `or`, `not`, `in`, `not in`, `between`, `is null`, `is not null`, `!?`, `?` |
-
-### Advanced: Standalone Expression Evaluation
-
-The expression evaluator can be used independently:
-
-```typescript
-import { evaluateExpression } from 'picorules-compiler-js-core';
-
-const bmi = evaluateExpression(
-  'round(wt / power(ht / 100, 2), 1)',
-  { wt: 95, ht: 170 }
-);
-// bmi = 32.9
-```
-
-## FHIR Adapter: picorules-adapter-fhir
-
-Enables evaluation of Picorules ruleblocks directly against FHIR R4 Bundles. No EADV database or data flattening required.
-
-### Installation
-
-```bash
-npm install picorules-adapter-fhir picorules-compiler-js-core
-```
-
-### Usage
-
-```typescript
-import { parse, evaluate } from 'picorules-compiler-js-core';
-import { FhirDataAdapter } from 'picorules-adapter-fhir';
-
-// Your FHIR R4 Bundle (from a FHIR server, Bulk Export, etc.)
-const bundle = await fetchPatientBundle(patientId);
-
-// Create the adapter — it translates EADV attribute names to FHIR queries
-const adapter = new FhirDataAdapter(bundle);
-
-// Evaluate any Picorules ruleblock against FHIR data
-const parsed = parse([{ name: 'anaemia', text: prbSource, isActive: true }]);
-const result = evaluate(parsed[0], adapter);
-// { hb_last: 118, is_anaemic: 1 }
-```
-
-### How Terminology Mapping Works
-
-The adapter translates EADV attribute names to FHIR resource queries using three strategies:
-
-**1. Auto-Derived (ICD-10, ICPC-2, ATC)**
-
-The EADV attribute name encodes the code directly:
-
-| EADV Attribute | FHIR Query |
-|---|---|
-| `icd_e11%` | Condition where code system = ICD-10 and code starts with "E11" |
-| `icpc_k86001` | Condition where code system = ICPC-2 and code = "K86001" |
-| `rxnc_c09aa%` | MedicationRequest where code system = ATC and code starts with "C09AA" |
-
-**2. Curated LOINC Lookup (80+ mappings)**
-
-Lab and observation attributes map to LOINC codes via a built-in dictionary:
-
-| EADV Attribute | LOINC Code | FHIR Resource |
-|---|---|---|
-| `lab_bld_egfr` | 33914-3 | Observation |
-| `lab_bld_haemoglobin` | 718-7 | Observation |
-| `lab_bld_creatinine` | 2160-0 | Observation |
-| `obs_bp_systolic` | 8480-6 | Observation |
-| `obs_weight` | 29463-7 | Observation |
-
-**3. User Overrides**
-
-Add custom mappings at runtime:
-
-```typescript
-const adapter = new FhirDataAdapter(bundle, {
-  overrides: {
-    'my_custom_lab': {
-      system: 'http://loinc.org',
-      code: '12345-6',
-      resourceType: 'Observation',
-    },
-  },
-});
-```
-
-### FHIR Code Systems
-
-The adapter uses official HL7 FHIR R4 code system URIs:
-
-| System | URI |
-|--------|-----|
-| ICD-10 | `http://hl7.org/fhir/sid/icd-10` |
-| ICPC-2 | `http://hl7.org/fhir/sid/icpc-2` |
-| LOINC | `http://loinc.org` |
-| SNOMED CT | `http://snomed.info/sct` |
-| WHO ATC | `http://www.whocc.no/atc` |
-| RxNorm | `http://www.nlm.nih.gov/research/umls/rxnorm` |
-
-## Mock Data Generator: picorules-compiler-js-eadv-mocker
-
-Generates synthetic EADV data for testing ruleblocks without a real clinical database.
-
-### Installation
-
-```bash
-npm install picorules-compiler-js-eadv-mocker
-```
-
-### Usage
-
-```typescript
-import { generateMockData } from 'picorules-compiler-js-eadv-mocker';
-
-const result = generateMockData({
-  ruleblocks: [{ name: 'ckd', text: prbSource, isActive: true }],
-  options: {
-    entityCount: 10,          // 10 patients
-    observationsPerEntity: 5, // 5 observations per attribute
-    seed: 42,                 // Reproducible results
-    dateDistribution: 'recent-weighted', // More recent observations
-  },
-});
-
-console.log(result.eadv);     // EADV rows
-console.log(result.metadata); // { entities, attributes, totalRows }
-```
-
-The mocker:
-- Analyses the ruleblock to determine which EADV attributes are needed
-- Generates clinically realistic values using built-in value ranges (e.g., eGFR 15-120, Hb 80-180)
-- Supports wildcard attribute expansion (e.g., `icd_e11%` generates `icd_e11xx`)
-- Produces seeded, reproducible output for deterministic testing
-
-## Pluggable Data Adapters
+## Data Adapters
 
 The JS evaluator works with any data source through the `DataAdapter` interface:
 
@@ -266,29 +115,42 @@ interface DataRecord {
 }
 ```
 
-Built-in adapters:
-- **`EadvDataAdapter`** — For in-memory EADV records (from `picorules-compiler-js-core`)
-- **`FhirDataAdapter`** — For FHIR R4 Bundles (from `picorules-adapter-fhir`)
+| Adapter | Data Source | Package |
+|---------|-----------|---------|
+| `EadvDataAdapter` | In-memory EADV records | `picorules-compiler-js-core` |
+| `FhirDataAdapter` | FHIR R4 Bundles | `picorules-adapter-fhir` |
+| `OpenEhrDataAdapter` | openEHR CDRs (via AQL) | `picorules-adapter-openehr` |
 
-Custom adapters can be built for any data source (HL7v2, CSV, custom EMR APIs, etc.) by implementing this interface.
+Custom adapters can be built for any data source (HL7v2, CSV, OMOP CDM, etc.) by implementing this two-method interface.
+
+## Applications & Tools
+
+| Application | Description | Tech Stack |
+|------------|-------------|-----------|
+| [Picorules Studio](https://github.com/asaabey/picorules-studio) | Web IDE for rule authoring, compilation, and testing | Next.js, Monaco Editor, Neon PostgreSQL |
+| [Picorule Sentry](https://github.com/asaabey/picorule-sentry) | Ruleblock variable catalog and explorer | React, Netlify Functions, MCP |
+| [Picorules Agent](https://github.com/asaabey/picorules-agent) | AI-assisted rule authoring via Claude Code | Node.js, Claude Code Skills |
+| [Picorules Docs](https://github.com/asaabey/picorules-docs) | This documentation site | React, Vite, Markdown |
 
 ## Performance
 
 | Operation | Time |
 |-----------|------|
-| Parse a ruleblock | ~0.5ms |
-| Evaluate against EADV data | ~0.3ms |
-| Evaluate against FHIR Bundle | ~0.4ms |
-| Compile to SQL | < 1ms |
-| All 85 first-order ruleblocks (mock data) | ~30ms total |
+| Parse 153 ruleblocks | ~50ms |
+| Evaluate 153 ruleblocks (FHIR, per patient) | ~16ms |
+| Evaluate 153 ruleblocks (openEHR, per patient) | ~50ms |
+| Smart fetch (4 FHIR queries) | ~30ms |
+| Compile single ruleblock to SQL | < 1ms |
 
-## Source Code
+## Source Repositories
 
 | Repository | Description |
 |------------|-------------|
 | [picorules-compiler-js-core](https://github.com/asaabey/picorules-compiler-js-core) | Compiler + JS evaluator |
-| [picorules-adapter-fhir](https://github.com/asaabey/picorules-adapter-fhir) | FHIR R4 adapter |
-| [picorules-compiler-js-eadv-mocker](https://github.com/asaabey/picorules-compiler-js-eadv-mocker) | Mock data generator |
-| [picorules-agent](https://github.com/asaabey/picorules-agent) | AI-assisted rule authoring CLI |
-| [picorules-docs](https://github.com/asaabey/picorules-docs) | This documentation site |
-| [picorule-sentry](https://github.com/asaabey/picorule-sentry) | Web UI for rule variable analysis |
+| [picorules-adapter-fhir](https://github.com/asaabey/picorules-adapter-fhir) | FHIR R4 adapter + smart fetch + CDS Hooks |
+| [picorules-adapter-openehr](https://github.com/asaabey/picorules-adapter-openehr) | openEHR AQL adapter |
+| [picorules-studio](https://github.com/asaabey/picorules-studio) | Web IDE |
+| [picorules-agent](https://github.com/asaabey/picorules-agent) | AI-assisted rule authoring |
+| [picorule-sentry](https://github.com/asaabey/picorule-sentry) | Variable catalog explorer |
+| [picorules-docs](https://github.com/asaabey/picorules-docs) | Documentation site |
+| [tkc-picorules](https://github.com/asaabey/tkc-picorules) | Original PL/SQL compiler (2019) |
