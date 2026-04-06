@@ -59,6 +59,8 @@ export function LandingPage({ onEnterDocs, theme, onToggleTheme }: LandingPagePr
       <section className="hero">
         <div className="hero__badges">
           <div className="hero__badge">Clinical Decision Support</div>
+          <div className="hero__badge">HL7 FHIR R4</div>
+          <div className="hero__badge">openEHR</div>
           <a
             href="https://github.com/asaabey/picorules-docs"
             target="_blank"
@@ -76,9 +78,9 @@ export function LandingPage({ onEnterDocs, theme, onToggleTheme }: LandingPagePr
           <span className="hero__gradient">not SQL queries.</span>
         </h1>
         <p className="hero__subtitle">
-          Picorules is a domain-specific language that transforms clinical decision
-          support authoring from complex SQL into clear, readable logic that clinicians
-          and developers can understand together.
+          Picorules is a domain-specific language for clinical decision support that
+          runs on HL7 FHIR, openEHR, and SQL databases. Write rules once —
+          evaluate against any health data platform.
         </p>
         <div className="hero__actions">
           <button className="hero__btn hero__btn--primary" onClick={onEnterDocs}>
@@ -219,6 +221,103 @@ needs_workup : {
         </div>
       </section>
 
+      {/* Integration Section */}
+      <section className="features">
+        <div className="features__header">
+          <h2 className="features__title">Works with your health data platform</h2>
+          <p className="features__subtitle">
+            Write rules once. The same ruleblocks evaluate identically on FHIR R4 servers,
+            openEHR Clinical Data Repositories, and legacy SQL databases. No re-authoring,
+            no data transformation.
+          </p>
+        </div>
+
+        <div className="features__grid">
+          <div className="feature-card">
+            <div className="feature-card__icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
+              </svg>
+            </div>
+            <h3 className="feature-card__title">HL7 FHIR R4</h3>
+            <p className="feature-card__text">
+              Evaluate against FHIR Bundles from SMART on FHIR apps, HAPI, Epic, Cerner, Azure,
+              or any FHIR R4 server. Smart fetch queries only the LOINC/ICD codes your rules need.
+            </p>
+          </div>
+
+          <div className="feature-card">
+            <div className="feature-card__icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <ellipse cx="12" cy="5" rx="9" ry="3" />
+                <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3" />
+                <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5" />
+              </svg>
+            </div>
+            <h3 className="feature-card__title">openEHR</h3>
+            <p className="feature-card__text">
+              Query openEHR CDRs via AQL against standard archetypes — lab results,
+              blood pressure, diagnoses, medications. Works with EHRbase, Better Platform, and DIPS.
+            </p>
+          </div>
+
+          <div className="feature-card">
+            <div className="feature-card__icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+                <line x1="3" y1="9" x2="21" y2="9" />
+                <line x1="9" y1="21" x2="9" y2="9" />
+              </svg>
+            </div>
+            <h3 className="feature-card__title">SQL Databases</h3>
+            <p className="feature-card__text">
+              Compile to optimised SQL for Oracle, PostgreSQL, or SQL Server. Run batch analytics
+              across millions of patients against EADV data warehouses.
+            </p>
+          </div>
+
+          <div className="feature-card">
+            <div className="feature-card__icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="10" />
+                <polyline points="12 6 12 12 16 14" />
+              </svg>
+            </div>
+            <h3 className="feature-card__title">Smart Data Fetching</h3>
+            <p className="feature-card__text">
+              The compiler introspects your rules to derive the minimal data contract automatically.
+              Only the FHIR codes or AQL paths your rules reference are queried — privacy by design.
+            </p>
+          </div>
+
+          <div className="feature-card">
+            <div className="feature-card__icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+              </svg>
+            </div>
+            <h3 className="feature-card__title">CDS Hooks Ready</h3>
+            <p className="feature-card__text">
+              Auto-generate CDS Hooks prefetch templates from your ruleblocks. The rules define
+              their own data contract — no manual service configuration needed.
+            </p>
+          </div>
+
+          <div className="feature-card">
+            <div className="feature-card__icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
+            </div>
+            <h3 className="feature-card__title">Proven Identical</h3>
+            <p className="feature-card__text">
+              153 production ruleblocks tested across FHIR, openEHR, and SQL paths with real
+              patient data. Every clinical variable matches — CKD staging, diabetes, CV risk, Charlson index.
+            </p>
+          </div>
+        </div>
+      </section>
+
       {/* IDE Section */}
       <section className="ide-section">
         <div className="ide-section__content">
@@ -274,7 +373,7 @@ needs_workup : {
                 </svg>
               </a>
               <a
-                href="https://github.com/asaabey/picorules-compiler-js-webapp"
+                href="https://github.com/asaabey/picorules-studio"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="ide-section__btn ide-section__btn--secondary"
