@@ -1,0 +1,65 @@
+:root {
+  --paper: #f6f4ed;
+  --ink: #233e35;
+  --text: #34483f;
+  --muted: #60685f;
+  --line: #d6d8cc;
+  --accent: #80653f;
+  --surface: #eeeee5;
+  --panel: #eceee4;
+  --panel-line: #bbc6b4;
+  --illustration: #aab5a2;
+  --serif: 'Newsreader Variable', Georgia, serif;
+  --sans: 'DM Sans Variable', Arial, sans-serif;
+  font-family: var(--sans);
+  color: var(--text);
+  background: var(--paper);
+  font-synthesis: none;
+}
+
+:root[data-theme='dark'] {
+  --paper: #182b23;
+  --ink: #e8ecdf;
+  --text: #d5dfd1;
+  --muted: #b1bfb0;
+  --line: #425447;
+  --accent: #cab68b;
+  --surface: #20352a;
+  --panel: #20352a;
+  --panel-line: #536651;
+  --illustration: #798e70;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: 2rem; }
+body { margin: 0; }
+::selection { color: var(--paper); background: var(--ink); }
+a { color: inherit; }
+button, input { font: inherit; }
+svg { display: block; }
+h1, h2, h3, p { margin: 0; }
+h1, h2, h3 { font-family: var(--serif); font-weight: 400; color: var(--ink); }
+em { font-weight: 350; }
+a, button, summary { -webkit-tap-highlight-color: transparent; }
+:focus-visible { outline: 2px solid var(--ink); outline-offset: 6px; }
+.shell { width: min(1240px, calc(100% - 112px)); margin-inline: auto; }
+.eyebrow { font-size: .68rem; font-weight: 500; letter-spacing: .16em; line-height: 1.5; text-transform: uppercase; }
+.text-link { display: inline-flex; align-items: center; gap: .8rem; font-size: .85rem; text-decoration: none; padding-block: .5rem; border-bottom: 1px solid currentColor; }
+.text-link svg { transition: transform 180ms ease; }
+.text-link:hover svg { transform: translateX(3px); }
+.skip-link { position: fixed; z-index: 20; top: 1rem; left: 1rem; padding: .75rem 1rem; color: var(--paper); background: var(--ink); transform: translateY(-200%); }
+.skip-link:focus { transform: translateY(0); }
+
+@media (max-width: 900px) {
+  .shell { width: calc(100% - 64px); }
+}
+
+@media (max-width: 600px) {
+  .shell { width: calc(100% - 40px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}

@@ -1,0 +1,226 @@
+---
+// A composed field, rather than random particles: larger forms share smaller constructs.
+const nodes = [
+  { x: 35, y: 160, r: 5 },
+  { x: 175, y: 65, r: 13 },
+  { x: 370, y: 125, r: 4 },
+  { x: 560, y: 35, r: 5 },
+  { x: 760, y: 100, r: 17 },
+  { x: 960, y: 45, r: 4 },
+  { x: 1130, y: 145, r: 6 },
+  { x: 1340, y: 70, r: 15 },
+  { x: 1470, y: 260, r: 5 },
+  { x: 1300, y: 355, r: 4 },
+  { x: 1410, y: 580, r: 16 },
+  { x: 1210, y: 695, r: 5 },
+  { x: 1040, y: 610, r: 12 },
+  { x: 870, y: 745, r: 4 },
+  { x: 655, y: 655, r: 6 },
+  { x: 435, y: 730, r: 14 },
+  { x: 235, y: 620, r: 4 },
+  { x: 45, y: 740, r: 6 },
+  { x: -40, y: 475, r: 15 },
+  { x: 175, y: 385, r: 4 },
+  { x: 440, y: 465, r: 5 },
+  { x: 715, y: 350, r: 11 },
+  { x: 975, y: 390, r: 5 },
+];
+
+const edges = [
+  [0, 1, -20], [1, 2, 32], [2, 3, -22], [2, 4, 40], [3, 4, -30],
+  [4, 5, 22], [4, 6, 45], [5, 7, -20], [6, 7, 22], [7, 8, 18],
+  [6, 9, -30], [8, 9, 20], [9, 10, 30], [10, 11, -22], [9, 12, 40],
+  [11, 12, -18], [12, 13, 25], [12, 14, 35], [13, 15, -20],
+  [14, 15, 24], [15, 16, -30], [16, 17, 20], [16, 18, -45],
+  [17, 18, 20], [0, 18, -30], [1, 19, 35], [18, 19, 25],
+  [19, 20, -25], [16, 20, 20], [20, 21, 35], [14, 21, -30],
+  [4, 21, 25], [21, 22, -25], [6, 22, 25], [12, 22, -20],
+];
+
+function connection(from: number, to: number, bend: number) {
+  const a = nodes[from];
+  const b = nodes[to];
+  const dx = (b.x - a.x) / 3;
+  const dy = (b.y - a.y) / 3;
+  return `M${a.x},${a.y} C${a.x + dx},${a.y + dy + bend} ${b.x - dx},${b.y - dy + bend} ${b.x},${b.y}`;
+}
+---
+
+<phenotype-backdrop aria-hidden="true">
+  <svg viewBox="0 0 1400 800" preserveAspectRatio="xMidYMid slice" focusable="false">
+    <g fill="none" stroke="currentColor" stroke-width=".8">
+      {edges.map(([from, to, bend]) => (
+        <path data-from={from} data-to={to} data-bend={bend} d={connection(from, to, bend)} opacity=".085" />
+      ))}
+    </g>
+    {nodes.map((node) => (
+      <g data-node data-x={node.x} data-y={node.y} transform={`translate(${node.x} ${node.y})`} opacity=".13">
+        {node.r > 10 && <circle r={node.r + 13} fill="none" stroke="currentColor" stroke-width=".55" />}
+        <circle r={node.r} fill="var(--paper)" stroke="currentColor" stroke-width=".85" />
+        <circle r="1.8" fill="currentColor" />
+      </g>
+    ))}
+  </svg>
+</phenotype-backdrop>
+
+<script>
+  class PhenotypeBackdrop extends HTMLElement {
+    private cleanup?: () => void;
+
+    connectedCallback() {
+      if (this.cleanup) return;
+      const svg = this.querySelector('svg');
+      const hero = this.closest<HTMLElement>('.hero');
+      if (!svg || !hero) return;
+
+      const nodes = [...svg.querySelectorAll<SVGGElement>('[data-node]')].map((element) => ({
+        element,
+        x: Number(element.dataset.x),
+        y: Number(element.dataset.y),
+        dx: 0,
+        dy: 0,
+        light: 0,
+      }));
+      const edges = [...svg.querySelectorAll<SVGPathElement>('[data-from]')].map((element) => ({
+        element,
+        from: Number(element.dataset.from),
+        to: Number(element.dataset.to),
+        bend: Number(element.dataset.bend),
+      }));
+      const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+      const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)');
+      let pointer: { x: number; y: number } | null = null;
+      let frame = 0;
+      let previousTime = 0;
+      let visible = true;
+
+      const paint = () => {
+        for (const node of nodes) {
+          node.element.setAttribute('transform', `translate(${node.x + node.dx} ${node.y + node.dy})`);
+          node.element.setAttribute('opacity', String(.13 + node.light * .17));
+        }
+        for (const edge of edges) {
+          const a = nodes[edge.from];
+          const b = nodes[edge.to];
+          const ax = a.x + a.dx;
+          const ay = a.y + a.dy;
+          const bx = b.x + b.dx;
+          const by = b.y + b.dy;
+          const dx = (bx - ax) / 3;
+          const dy = (by - ay) / 3;
+          edge.element.setAttribute('d', `M${ax},${ay} C${ax + dx},${ay + dy + edge.bend} ${bx - dx},${by - dy + edge.bend} ${bx},${by}`);
+          edge.element.setAttribute('opacity', String(.085 + Math.max(a.light, b.light) * .11));
+        }
+      };
+
+      // Only animate while the field is settling; no continuous idle animation.
+      const animate = (time: number) => {
+        frame = 0;
+        const elapsed = previousTime ? Math.min(time - previousTime, 40) : 16;
+        previousTime = time;
+        const easing = 1 - Math.exp(-elapsed / 150);
+        let settling = false;
+
+        for (const node of nodes) {
+          const x = pointer ? pointer.x - node.x : 0;
+          const y = pointer ? pointer.y - node.y : 0;
+          const distance = Math.hypot(x, y);
+          const influence = pointer ? Math.max(0, 1 - distance / 310) ** 2 : 0;
+          const targetX = x * influence * .15;
+          const targetY = y * influence * .15;
+          node.dx += (targetX - node.dx) * easing;
+          node.dy += (targetY - node.dy) * easing;
+          node.light += (influence - node.light) * easing;
+          if (Math.abs(targetX - node.dx) + Math.abs(targetY - node.dy) > .015 || Math.abs(influence - node.light) > .001) {
+            settling = true;
+          } else {
+            node.dx = targetX;
+            node.dy = targetY;
+            node.light = influence;
+          }
+        }
+        paint();
+        if (settling && visible) frame = requestAnimationFrame(animate);
+        else previousTime = 0;
+      };
+
+      const schedule = () => {
+        if (!frame && visible) frame = requestAnimationFrame(animate);
+      };
+      const reset = () => {
+        pointer = null;
+        schedule();
+      };
+      const onPointerMove = (event: PointerEvent) => {
+        if (reducedMotion.matches || !finePointer.matches || event.pointerType !== 'mouse') return;
+        const matrix = svg.getScreenCTM();
+        if (!matrix) return;
+        const point = new DOMPoint(event.clientX, event.clientY).matrixTransform(matrix.inverse());
+        pointer = { x: point.x, y: point.y };
+        schedule();
+      };
+      const onPreferenceChange = () => {
+        if (!reducedMotion.matches && finePointer.matches) return;
+        cancelAnimationFrame(frame);
+        frame = 0;
+        previousTime = 0;
+        pointer = null;
+        for (const node of nodes) node.dx = node.dy = node.light = 0;
+        paint();
+      };
+
+      const observer = new IntersectionObserver(([entry]) => {
+        visible = entry.isIntersecting;
+        if (!visible) {
+          cancelAnimationFrame(frame);
+          frame = 0;
+          previousTime = 0;
+          pointer = null;
+        } else if (!reducedMotion.matches && finePointer.matches) {
+          schedule();
+        }
+      });
+      observer.observe(hero);
+      hero.addEventListener('pointermove', onPointerMove, { passive: true });
+      hero.addEventListener('pointerleave', reset);
+      window.addEventListener('blur', reset);
+      reducedMotion.addEventListener('change', onPreferenceChange);
+      finePointer.addEventListener('change', onPreferenceChange);
+
+      this.cleanup = () => {
+        cancelAnimationFrame(frame);
+        observer.disconnect();
+        hero.removeEventListener('pointermove', onPointerMove);
+        hero.removeEventListener('pointerleave', reset);
+        window.removeEventListener('blur', reset);
+        reducedMotion.removeEventListener('change', onPreferenceChange);
+        finePointer.removeEventListener('change', onPreferenceChange);
+      };
+    }
+
+    disconnectedCallback() {
+      this.cleanup?.();
+      this.cleanup = undefined;
+    }
+  }
+
+  if (!customElements.get('phenotype-backdrop')) {
+    customElements.define('phenotype-backdrop', PhenotypeBackdrop);
+  }
+</script>
+
+<style>
+  phenotype-backdrop {
+    position: absolute;
+    inset: 0 -56px;
+    z-index: -1;
+    display: block;
+    pointer-events: none;
+    overflow: hidden;
+    color: var(--ink);
+    mask-image: linear-gradient(to bottom, transparent, #000 10%, #000 88%, transparent);
+  }
+  svg { display: block; width: 100%; height: 100%; }
+  @media (max-width: 900px) { phenotype-backdrop { inset-inline: -32px; } }
+  @media (max-width: 600px) { phenotype-backdrop { inset-inline: -20px; opacity: .65; } }
+</style>

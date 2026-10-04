@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <rect width="1200" height="630" fill="#f6f4ed"/>
+  <g fill="#233e35" font-family="Georgia, serif">
+    <text x="80" y="100" font-size="36">picorules</text>
+    <text x="80" y="285" font-size="76" letter-spacing="-3">Clinical phenotypes,</text>
+    <text x="80" y="380" font-size="76" font-style="italic" letter-spacing="-3">thoughtfully modelled.</text>
+  </g>
+  <path d="M80 135H1120M80 505H1120" stroke="#d6d8cc"/>
+  <text x="80" y="552" fill="#60685f" font-family="Arial, sans-serif" font-size="18" letter-spacing="3">A LANGUAGE FOR CLINICAL KNOWLEDGE</text>
+  <circle cx="1080" cy="290" r="45" fill="none" stroke="#aab5a2"/>
+  <circle cx="1080" cy="290" r="30" fill="#233e35"/>
+</svg>

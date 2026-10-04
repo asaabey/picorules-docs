@@ -1,0 +1,20 @@
+/* Two reusable summaries of a patient's recorded eGFR observations. */
+#define_ruleblock(renal_measurements, {
+  description: "Latest and lowest recorded eGFR measurements",
+  is_active: 2
+});
+
+egfr_latest => eadv.lab_bld_egfr.val.last();
+egfr_lowest => eadv.lab_bld_egfr.val.min();
+
+renal_measurements : { egfr_latest!? => 1 }, { => 0 };
+
+#define_attribute(egfr_latest, {
+  label: "Latest recorded eGFR", is_reportable: 1, type: 1001
+});
+#define_attribute(egfr_lowest, {
+  label: "Lowest recorded eGFR", is_reportable: 1, type: 1001
+});
+#define_attribute(renal_measurements, {
+  label: "eGFR measurement available", is_reportable: 1, type: 1001
+});

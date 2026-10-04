@@ -1,0 +1,15 @@
+---
+import SiteLayout from '../../layouts/SiteLayout.astro';
+
+// Netlify redirects this route. The HTML fallback works on any static host.
+---
+
+<SiteLayout title="The Picorules Book">
+  <main id="main" class="shell" style="padding-block: 5rem;">
+    <h1>The Picorules Book</h1>
+    <p style="margin-top: 1.5rem;">
+      <a href="/docs/introduction/">Read the introduction →</a>
+    </p>
+  </main>
+  <script is:inline>window.location.replace('/docs/introduction/');</script>
+</SiteLayout>

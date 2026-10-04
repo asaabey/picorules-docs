@@ -1,0 +1,43 @@
+@import '@fontsource-variable/newsreader';
+@import '@fontsource-variable/dm-sans';
+
+:root {
+  --sl-font: 'DM Sans Variable', Arial, sans-serif;
+  --sl-color-accent-low: #243d33;
+  --sl-color-accent: #a8c9a6;
+  --sl-color-accent-high: #d9e6d2;
+  --sl-color-white: #f6f4ed;
+  --sl-color-gray-1: #e8e8df;
+  --sl-color-gray-2: #bdc4b9;
+  --sl-color-gray-3: #859386;
+  --sl-color-gray-4: #48564b;
+  --sl-color-gray-5: #2c3b31;
+  --sl-color-gray-6: #1d2d23;
+  --sl-color-black: #15221a;
+  --sl-content-width: 48rem;
+}
+
+:root[data-theme='light'] {
+  --sl-color-accent-low: #e4eadb;
+  --sl-color-accent: #365846;
+  --sl-color-accent-high: #233e35;
+  --sl-color-white: #233e35;
+  --sl-color-gray-1: #34483f;
+  --sl-color-gray-2: #536154;
+  --sl-color-gray-3: #626d61;
+  --sl-color-gray-4: #929d8d;
+  --sl-color-gray-5: #d6d8cc;
+  --sl-color-gray-6: #eeeee5;
+  --sl-color-gray-7: #f2f2e9;
+  --sl-color-black: #f6f4ed;
+}
+
+h1, h2, h3, .site-title {
+  font-family: 'Newsreader Variable', Georgia, serif;
+  font-weight: 400;
+  letter-spacing: -.025em;
+}
+
+.site-title { font-size: 1.65rem; }
+.sl-markdown-content h2 { margin-top: 2.5rem; }
+.sl-markdown-content p, .sl-markdown-content li { line-height: 1.8; }

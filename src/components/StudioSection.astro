@@ -1,0 +1,61 @@
+---
+import Arrow from './Arrow.astro';
+const source = `egfr_latest => eadv.lab_bld_egfr.val.last();
+egfr_lowest => eadv.lab_bld_egfr.val.min();`;
+---
+
+<section id="studio" class="studio shell" aria-labelledby="studio-heading">
+  <div class="studio-copy">
+    <p class="eyebrow">05 — Picorules Studio</p>
+    <h2 id="studio-heading">Room to write.<br /><em>Space to explore.</em></h2>
+    <p>A browser-based workspace for developing ruleblocks. Write a definition, inspect its compiled SQL, and explore the results with synthetic data.</p>
+    <ul class="studio-features">
+      <li>Syntax highlighting and a Monaco editor</li>
+      <li>SQL compilation for three database dialects</li>
+      <li>Synthetic data generation and PostgreSQL execution</li>
+    </ul>
+    <div class="studio-links"><a class="text-link" href="https://studio.picorules.com">Open Studio <Arrow diagonal /></a><a class="text-link" href="/docs/picorules-studio/">Read the guide <Arrow /></a></div>
+    <a class="studio-source" href="https://github.com/asaabey/picorules-studio">Studio source code ↗</a>
+  </div>
+  <figure class="studio-preview">
+    <figcaption><span class="eyebrow">A ruleblock in context</span><span>Illustrative workspace</span></figcaption>
+    <div class="workflow"><span>Write</span><span aria-hidden="true">→</span><span>Compile</span><span aria-hidden="true">→</span><span>Explore</span></div>
+    <p class="file-name">renal_measurements.prb</p>
+    <pre tabindex="0" aria-label="Studio example ruleblock"><code>{source}</code></pre>
+    <table>
+      <caption>Example output · synthetic observations</caption>
+      <thead><tr><th scope="col">Characteristic</th><th scope="col">Value</th></tr></thead>
+      <tbody><tr><th scope="row">Latest recorded eGFR</th><td>52</td></tr><tr><th scope="row">Lowest recorded eGFR</th><td>44</td></tr></tbody>
+    </table>
+  </figure>
+</section>
+
+<style>
+  .studio { display: grid; grid-template-columns: 1fr 1.05fr; gap: 8rem; padding-block: 100px; }
+  .studio-copy > .eyebrow { color: var(--accent); margin-bottom: 1.6rem; }
+  h2 { font-size: clamp(2.5rem,3.65vw,3.6rem); letter-spacing: -.035em; line-height: 1.08; }
+  .studio-copy > p:not(.eyebrow) { font-size: .87rem; line-height: 1.9; color: var(--muted); margin-top: 1.4rem; max-width: 400px; }
+  .studio-features { padding-left: 1rem; margin-block: 1.4rem; font-size: .78rem; line-height: 2.2; color: var(--muted); }
+  .studio-features li::marker { color: var(--accent); }
+  .studio-links { display: flex; gap: 1.6rem; flex-wrap: wrap; }
+  .studio-links .text-link { font-size: .75rem; }
+  .studio-source { display: inline-block; margin-top: .9rem; font-size: .68rem; text-decoration: none; padding-block: .4rem; color: var(--muted); }
+  .studio-source:hover { text-decoration: underline; text-underline-offset: 4px; }
+  .studio-preview { margin: 0; min-width: 0; align-self: center; padding: 1.6rem 1.7rem; border: 1px solid var(--line); background: var(--surface); }
+  figcaption { display: flex; justify-content: space-between; gap: 1rem; color: var(--muted); }
+  figcaption .eyebrow { font-size: .59rem; }
+  figcaption > span:last-child { font-family: var(--serif); font-size: .8rem; font-style: italic; }
+  .workflow { display: flex; align-items: center; gap: 1rem; border-block: 1px solid var(--line); padding-block: .9rem; margin-top: 1.4rem; font-family: var(--serif); font-size: 1.1rem; }
+  .workflow > span:nth-child(even) { font-family: var(--sans); color: var(--muted); font-size: .75rem; }
+  .file-name { margin-top: 1.4rem; font-size: .65rem; color: var(--muted); }
+  pre { margin-block: .75rem 1.6rem; overflow-x: auto; font-size: .69rem; line-height: 2; }
+  code { font-family: ui-monospace, 'SFMono-Regular', Consolas, monospace; }
+  table { border-collapse: collapse; width: 100%; font-size: .75rem; }
+  caption { text-align: left; font-size: .62rem; color: var(--muted); padding-bottom: .8rem; }
+  th, td { text-align: left; padding-block: .8rem; border-top: 1px solid var(--line); font-weight: 400; }
+  thead th { font-size: .63rem; color: var(--muted); }
+  td { font-family: var(--serif); font-size: 1.1rem; }
+  @media (max-width:1100px) { .studio { gap: 4rem; } }
+  @media (max-width:800px) { .studio { gap: 3rem; padding-block: 70px; } .studio-preview { padding: 1.2rem; } }
+  @media (max-width:600px) { .studio { grid-template-columns: 1fr; gap: 2.4rem; padding-block: 58px; } h2 { font-size: 2.65rem; } figcaption { flex-wrap: wrap; gap: .5rem; } .studio-copy > .eyebrow { font-size: .59rem; } }
+</style>

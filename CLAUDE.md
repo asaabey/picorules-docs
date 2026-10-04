@@ -1,57 +1,29 @@
-# CLAUDE.md
+# Picorules website
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+Astro static landing page and Starlight documentation, deployed from this
+repository's `master` branch to the existing `picorules-docs` Netlify project.
 
-## Repository Overview
+Run `npm run check` and `npm run build` to validate changes. `npm run dev` and
+`npm run preview` bind to `0.0.0.0`. Generated `dist/` and `.astro/` are ignored.
 
-**Picorules Documentation Site** — a React + TypeScript SPA that renders interactive documentation for the Picorules clinical decision support language. This is a **visualization layer only**; the source of truth for documentation content lives in the parent `tkc-picorules-rules` repository's CLAUDE.md.
+The landing page is `src/pages/index.astro`; reusable components are in
+`src/components/`. Shared styles are in `src/styles/`. Keep the spacious ivory
+and forest palette, locally served Newsreader and DM Sans, and phenotype focus.
 
-## Commands
+The 13 numbered authoring chapters remain in `src/docs/`, registered in
+`src/docs/index.ts`. `npm run docs:import` refreshes their Starlight snapshots in
+`src/content/docs/docs/` and the AI reference in `public/references/`. Follow the
+authoritative Picorules rule documentation and compiler semantics when updating
+technical content. The four unnumbered legacy Markdown files are not imported.
 
-```bash
-npm run dev       # Start dev server (localhost:5173, HMR enabled)
-npm run build     # TypeScript check + Vite production build → dist/
-npm run lint      # ESLint
-npm run preview   # Serve production build locally
-```
+The whitepaper is maintained in the sibling `picorules-whitepaper` repository.
+`npm run whitepaper:import` requires Pandoc and copies its full web edition and
+PDF into this repository. Normal site builds use snapshots and need no sibling
+repositories. Keep authorship, citations, acknowledgements, and draft status.
 
-No test framework is configured.
+Production indexing and canonical URLs are configured in `netlify.toml`;
+previews stay `noindex`. Preserve legacy hash redirects and the separate Studio
+links. Clinical validation and software test evidence must remain distinct.
 
-## Architecture
-
-### Routing & Pages
-
-The app uses a custom hash-based router (`src/hooks/useHashRouter.ts`) with two route types:
-- **Landing page** (`/` or no hash) — rendered by `LandingPage.tsx`, a marketing-style page with IDE and SDK sections
-- **Documentation reader** (`#/{docId}`) — rendered by `App.tsx`, sidebar + markdown content viewer
-
-Legacy `#doc-{id}` URLs are auto-redirected to `#/{id}`.
-
-### Documentation Content Pipeline
-
-Markdown files in `src/docs/` are imported as raw strings via Vite's `?raw` suffix and registered in `src/docs/index.ts` as a `DocPage[]` array. The `DocPage` interface defines `id`, `title`, `description`, and `content` fields.
-
-Current docs (numbered for ordering):
-`01-introduction.md` through `08-developers.md`
-
-**To add a new doc page**: create the `.md` file, import it with `?raw` in `src/docs/index.ts`, and add an entry to the `docs` array.
-
-### Key Components
-
-- **`App.tsx`** — Main docs reader: sidebar navigation with search filtering, `react-markdown` content rendering (with `remark-gfm`), dark/light theme toggle (persisted to localStorage), build number display
-- **`LandingPage.tsx`** — Standalone landing page component
-- **`src/buildInfo.ts`** — Manual build number in `{year}.{month}.{build}` format
-
-### Styling
-
-Plain CSS with BEM-like naming: `index.css` (global/reset), `App.css` (docs reader), `LandingPage.css` (landing page). Dark mode via `.dark` class on `<html>`.
-
-## Picorules Language Reference
-
-A combined single-file reference for AI agents is available at `picorules-language-reference.md` in the repo root. It contains the complete language specification, syntax, functions, EADV model, templating, and examples.
-
-## Important Constraints
-
-- **Do not treat this repo as the source of truth** for Picorules documentation. Update the parent repo's CLAUDE.md first, then regenerate the markdown files here.
-- Old doc files (`overview.md`, `language.md`, `ruleblocks.md`, `templates-and-development.md`) still exist in `src/docs/` but are **not imported** — the active docs are the numbered `01-` through `08-` files.
-- `dist/` is gitignored build output.
+The former React site is preserved at tag `legacy-react-site-2026-10-04`.
+See README.md for deployment and rollback details.

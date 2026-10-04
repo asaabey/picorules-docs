@@ -1,0 +1,75 @@
+---
+const code = `import { parse, evaluate, EadvDataAdapter }
+  from 'picorules-compiler-js-core';
+
+// Serve the example ruleblock with your application.
+const source = await fetch('/examples/renal_measurements.prb')
+  .then((response) => response.text());
+
+const [rule] = parse([
+  { name: 'renal_measurements', text: source, isActive: true }
+]);
+
+// Synthetic records for one patient.
+const adapter = new EadvDataAdapter([
+  { eid: 1, att: 'lab_bld_egfr', dt: '2025-01-15', val: 44 },
+  { eid: 1, att: 'lab_bld_egfr', dt: '2025-06-01', val: 52 }
+]);
+
+console.log(evaluate(rule, adapter));
+// { egfr_latest: 52, egfr_lowest: 44, renal_measurements: 1 }`;
+---
+
+<details id="browser-example" class="browser-example">
+  <summary>Try the JavaScript runtime <span>In your browser</span></summary>
+  <p class="example-description">The same ruleblock can run against records in JavaScript. This example uses two synthetic observations, with no database connection.</p>
+  <pre tabindex="0" aria-label="JavaScript quick start"><code>{code}</code></pre>
+  <div class="run-example">
+    <button type="button" data-run-example>Run with sample data <span aria-hidden="true">→</span></button>
+    <p>Latest: 52 · Lowest: 44</p>
+  </div>
+  <output data-example-output role="status" aria-live="polite"></output>
+</details>
+
+<script>
+  const button = document.querySelector<HTMLButtonElement>('[data-run-example]');
+  const output = document.querySelector<HTMLOutputElement>('[data-example-output]');
+  button?.addEventListener('click', async () => {
+    if (!output) return;
+    button.disabled = true;
+    output.textContent = 'Running the example…';
+    try {
+      const [{ parse, evaluate, EadvDataAdapter }, response] = await Promise.all([
+        import('picorules-compiler-js-core'),
+        fetch('/examples/renal_measurements.prb'),
+      ]);
+      if (!response.ok) throw new Error('Could not load the example ruleblock.');
+      const source = await response.text();
+      const [rule] = parse([{ name: 'renal_measurements', text: source, isActive: true }]);
+      const adapter = new EadvDataAdapter([
+        { eid: 1, att: 'lab_bld_egfr', dt: '2025-01-15', val: 44 },
+        { eid: 1, att: 'lab_bld_egfr', dt: '2025-06-01', val: 52 },
+      ]);
+      output.textContent = JSON.stringify(evaluate(rule, adapter), null, 2);
+    } catch (error) {
+      output.textContent = error instanceof Error ? error.message : 'The example could not run. Please try again.';
+    } finally {
+      button.disabled = false;
+    }
+  });
+</script>
+
+<style>
+  .browser-example { margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid var(--line); }
+  summary { cursor: pointer; font-size: .77rem; padding-block: .5rem; }
+  summary span { color: var(--muted); font-size: .66rem; margin-left: .5rem; }
+  .example-description { font-size: .78rem; line-height: 1.9; color: var(--muted); margin-block: .9rem; }
+  pre { min-width: 0; padding: 1rem; margin: 0; background: var(--surface); font-size: .7rem; line-height: 1.8; overflow-x: auto; }
+  code { font-family: ui-monospace, 'SFMono-Regular', Consolas, monospace; }
+  .run-example { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; margin-top: 1rem; }
+  button { display: flex; align-items: center; gap: .9rem; padding: .75rem 1rem; color: var(--paper); background: var(--ink); border: 1px solid var(--ink); font-size: .73rem; cursor: pointer; }
+  button:disabled { cursor: wait; opacity: .7; }
+  .run-example p { font-size: .7rem; color: var(--muted); }
+  output { display: block; white-space: pre-wrap; font-family: ui-monospace, 'SFMono-Regular', Consolas, monospace; font-size: .73rem; line-height: 1.8; }
+  output:not(:empty) { margin-top: 1rem; padding: 1rem; background: var(--surface); }
+</style>

@@ -1,0 +1,33 @@
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "24"
+
+[context.production.environment]
+  PUBLIC_SITE_URL = "https://picorules.com"
+  PUBLIC_SITE_PREVIEW = "false"
+
+[context.deploy-preview.environment]
+  PUBLIC_SITE_PREVIEW = "true"
+
+[context.branch-deploy.environment]
+  PUBLIC_SITE_PREVIEW = "true"
+
+[[redirects]]
+  from = "/docs"
+  to = "/docs/introduction/"
+  status = 302
+  force = true
+
+[[redirects]]
+  from = "/docs/"
+  to = "/docs/introduction/"
+  status = 302
+  force = true
+
+[[redirects]]
+  from = "/picorules-language-reference.md"
+  to = "/references/picorules-language-reference.md"
+  status = 301

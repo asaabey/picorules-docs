@@ -1,0 +1,24 @@
+---
+interface Props {
+  light?: boolean;
+}
+
+const { light = false } = Astro.props;
+---
+
+<a href="/" class:list={['wordmark', { light }]} aria-label="Picorules home">
+  <svg width="29" height="34" viewBox="0 0 29 34" fill="none" aria-hidden="true">
+    <path d="M5 29V5h8.5a8.5 8.5 0 0 1 0 17H5" />
+    <path d="M11 29V11h3a2.5 2.5 0 0 1 0 5h-3" />
+    <circle cx="23" cy="29" r="2" fill="currentColor" stroke="none" />
+  </svg>
+  <span>picorules</span>
+</a>
+
+<style>
+  .wordmark { display: inline-flex; align-items: center; gap: .55rem; color: var(--ink); text-decoration: none; }
+  .wordmark svg { stroke: currentColor; stroke-width: 1.5; }
+  .wordmark span { font-family: var(--serif); font-size: 2rem; letter-spacing: -.055em; line-height: 1; }
+  .light { color: var(--paper); }
+  @media (max-width: 600px) { .wordmark { gap: .35rem; } .wordmark span { font-size: 1.7rem; } .wordmark svg { width: 24px; } }
+</style>

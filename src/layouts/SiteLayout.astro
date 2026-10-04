@@ -1,0 +1,54 @@
+---
+import '@fontsource-variable/newsreader';
+import '@fontsource-variable/newsreader/wght-italic.css';
+import '@fontsource-variable/dm-sans';
+import '../styles/global.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const {
+  title = 'Picorules — Clinical phenotypes, thoughtfully modelled',
+  description = 'A small, open-source language for modelling clinical phenotypes. Compose reusable clinical definitions from patient observations across FHIR, openEHR, and SQL.',
+} = Astro.props;
+
+const isPreview = import.meta.env.PUBLIC_SITE_PREVIEW !== 'false';
+const canonical = Astro.site ? new URL(Astro.url.pathname, Astro.site) : undefined;
+---
+
+<!doctype html>
+<html lang="en-GB">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content={Astro.generator} />
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#f6f4ed" />
+    <script is:inline>
+      (() => {
+        let theme;
+        try { theme = localStorage.getItem('starlight-theme'); } catch { /* Use system preference. */ }
+        document.documentElement.dataset.theme = theme === 'dark' || theme === 'light'
+          ? theme : window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      })();
+    </script>
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+    {Astro.site && <meta property="og:image" content={new URL('/social.png', Astro.site)} />}
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Picorules — Clinical phenotypes, thoughtfully modelled." />
+    {canonical && <link rel="canonical" href={canonical} />}
+    {isPreview && <meta name="robots" content="noindex, nofollow" />}
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>{title}</title>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <slot />
+  </body>
+</html>

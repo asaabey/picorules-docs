@@ -1,0 +1,92 @@
+---
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
+import Arrow from './Arrow.astro';
+
+const compiledSql = readFileSync(resolve('public/examples/renal_measurements.postgresql.sql'), 'utf8');
+const ruleExcerpt = `// Summarise a patient's recorded measurements
+egfr_latest => eadv.lab_bld_egfr.val.last();
+egfr_lowest => eadv.lab_bld_egfr.val.min();`;
+const sqlExcerpt = `WITH egfr_history AS (
+  SELECT eid, val,
+    MIN(val::numeric) OVER (
+      PARTITION BY eid
+    ) AS egfr_lowest,
+    ROW_NUMBER() OVER (
+      PARTITION BY eid ORDER BY dt DESC
+    ) AS observation_order
+  FROM eadv
+  WHERE att = 'lab_bld_egfr'
+)
+SELECT eid,
+  val AS egfr_latest,
+  egfr_lowest
+FROM egfr_history
+WHERE observation_order = 1;`;
+---
+
+<section id="language" class="language shell" aria-labelledby="language-heading">
+  <div class="language-introduction">
+    <div><p class="eyebrow">02 — The language</p><h2 id="language-heading">A small definition.<br /><em>A clearer intention.</em></h2></div>
+    <p>Picorules began by making clinical calculations easier to maintain in a database. Its compact definitions now also run in JavaScript, while keeping the clinical question in view.</p>
+  </div>
+  <div class="comparison">
+    <div class="code-panel">
+      <div class="panel-heading"><span class="eyebrow">SQL</span><span>Retrieval equivalent</span></div>
+      <pre tabindex="0" aria-label="SQL retrieval example"><code>{sqlExcerpt}</code></pre>
+    </div>
+    <div class="code-panel definition-panel">
+      <div class="panel-heading"><span class="eyebrow">Picorules</span><span>renal_measurements.prb · excerpt</span></div>
+      <pre tabindex="0" aria-label="Picorules retrieval example"><code>{ruleExcerpt}</code></pre>
+      <div class="definition-note">
+        <h3>Two questions, made explicit.</h3>
+        <p>What is the latest recorded eGFR? What is the lowest? These summaries are reusable constructs that can contribute to a larger phenotype definition.</p>
+        <a class="text-link" href="/examples/renal_measurements.prb" download>Get the complete ruleblock <Arrow /></a>
+      </div>
+    </div>
+  </div>
+  <p class="example-caption">An observation-summary example, with no disease classification. The SQL shows the retrieval operation; the compiler also supplies the surrounding ruleblock and output structure.</p>
+  <details class="compiled-output">
+    <summary>Inspect the actual compiler output <span>PostgreSQL</span></summary>
+    <pre tabindex="0" aria-label="Complete compiled PostgreSQL example"><code>{compiledSql}</code></pre>
+    <a class="text-link" href="/examples/renal_measurements.postgresql.sql" download>Download the SQL <Arrow /></a>
+  </details>
+  <div class="language-notes">
+    <div><h3>History, made usable.</h3><p>Select the latest result, summarise an interval, or follow change over time. Work with dated observations through the EADV model.</p><a href="/docs/functions-reference/">Explore the functions →</a></div>
+    <div><h3>Definitions that compose.</h3><p>Reuse named outputs from other ruleblocks. Build richer clinical descriptions from smaller, explicit constructs.</p><a href="/docs/language-reference/#cross-ruleblock-binding">Explore composition →</a></div>
+    <div><h3>Reasoning beside the rule.</h3><p>Keep descriptions, citation keys, and output labels alongside the definition with documentation and attribute directives.</p><a href="/docs/language-reference/#doc">Explore documentation →</a></div>
+  </div>
+</section>
+
+<style>
+  .language { padding-bottom: 100px; }
+  .language-introduction { display: grid; grid-template-columns: 1fr 1.05fr; gap: 8rem; align-items: end; }
+  .language-introduction .eyebrow { color: var(--accent); margin-bottom: 1.6rem; }
+  h2 { font-size: clamp(2.5rem, 3.65vw, 3.6rem); letter-spacing: -.035em; line-height: 1.08; }
+  .language-introduction > p { font-size: .87rem; line-height: 1.9; color: var(--muted); max-width: 400px; }
+  .comparison { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 2.6rem; }
+  .code-panel { min-width: 0; border-block: 1px solid var(--line); padding-block: 1.25rem; }
+  .panel-heading { display: flex; align-items: center; justify-content: space-between; gap: .75rem; margin-bottom: 1.3rem; color: var(--muted); }
+  .panel-heading .eyebrow { font-size: .62rem; }
+  .panel-heading > span:last-child { font-size: .65rem; }
+  pre { margin: 0; padding: 1.1rem; background: var(--surface); overflow-x: auto; line-height: 1.9; font-size: .73rem; tab-size: 2; }
+  code { font-family: ui-monospace, 'SFMono-Regular', Consolas, monospace; }
+  .definition-note { padding: 2.5rem 1.1rem 1rem; }
+  .definition-note h3 { font-size: 1.85rem; letter-spacing: -.025em; }
+  .definition-note p { margin-top: .9rem; font-size: .82rem; color: var(--muted); line-height: 1.9; max-width: 360px; }
+  .definition-note .text-link { font-size: .75rem; margin-top: 1rem; }
+  .example-caption { margin-top: 1rem; font-size: .7rem; color: var(--muted); line-height: 1.8; max-width: 800px; }
+  .compiled-output { margin-top: 1.25rem; }
+  summary { cursor: pointer; font-size: .77rem; padding-block: .75rem; }
+  summary span { color: var(--muted); font-size: .66rem; margin-left: .6rem; }
+  .compiled-output pre { margin-top: .6rem; max-height: 30rem; }
+  .compiled-output .text-link { margin-block: .75rem; font-size: .73rem; }
+  .language-notes { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 3.5rem; margin-top: 3rem; }
+  .language-notes h3 { font-size: 1.7rem; letter-spacing: -.025em; }
+  .language-notes p { margin-top: .7rem; font-size: .8rem; color: var(--muted); line-height: 1.85; }
+  .language-notes a { display: inline-block; font-size: .73rem; text-decoration: none; margin-top: .8rem; padding-block: .4rem; }
+  .language-notes a:hover { text-decoration: underline; text-underline-offset: 4px; }
+  @media (max-width: 1100px) { .language-introduction { gap: 4rem; } .language-notes { gap: 2rem; } }
+  @media (max-width: 800px) { .language { padding-bottom: 70px; } .language-introduction { gap: 3rem; } .comparison { gap: 1.5rem; } .panel-heading { align-items: start; flex-direction: column; gap: .4rem; } .language-notes { gap: 1.5rem; } }
+  @media (max-width: 600px) { .language { padding-bottom: 58px; } .language-introduction, .comparison, .language-notes { grid-template-columns: 1fr; } .language-introduction { gap: 1.6rem; } h2 { font-size: 2.65rem; } .panel-heading { flex-direction: row; } .definition-panel { grid-row: 1; } .language-notes { gap: 1.8rem; } .definition-note { padding-top: 1.5rem; } .language-introduction .eyebrow { font-size: .59rem; } }
+</style>

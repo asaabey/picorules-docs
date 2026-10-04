@@ -1,0 +1,80 @@
+[
+  {
+    "id": "introduction",
+    "title": "Introduction",
+    "description": "What is Picorules and why it exists",
+    "file": "01-introduction.md"
+  },
+  {
+    "id": "tutorial",
+    "title": "Tutorial",
+    "description": "Step-by-step guide to writing your first ruleblocks",
+    "file": "02-tutorial.md"
+  },
+  {
+    "id": "language-reference",
+    "title": "Language Reference",
+    "description": "Complete syntax specification for functional and conditional statements",
+    "file": "03-language-reference.md"
+  },
+  {
+    "id": "eadv-model",
+    "title": "EADV Model",
+    "description": "Understanding the Entity-Attribute-Date-Value data structure",
+    "file": "04-eadv-model.md"
+  },
+  {
+    "id": "functions-reference",
+    "title": "Functions Reference",
+    "description": "Complete reference of all available functions and operators",
+    "file": "05-functions-reference.md"
+  },
+  {
+    "id": "jinja2-templating",
+    "title": "Jinja2 Templating",
+    "description": "Creating dashboard templates with Jinja2 syntax",
+    "file": "06-jinja2-templating.md"
+  },
+  {
+    "id": "examples",
+    "title": "Examples & Cookbook",
+    "description": "Real-world clinical patterns and complete ruleblock examples",
+    "file": "07-examples.md"
+  },
+  {
+    "id": "architecture",
+    "title": "Architecture",
+    "description": "Transport-agnostic three-layer model, DataAdapter interface, and comparison with CDS standards",
+    "file": "10-architecture.md"
+  },
+  {
+    "id": "fhir-integration",
+    "title": "FHIR R4 Integration",
+    "description": "FHIR data adapter, smart fetch, CDS Hooks prefetch, SMART on FHIR apps",
+    "file": "11-fhir-integration.md"
+  },
+  {
+    "id": "openehr-integration",
+    "title": "openEHR Integration",
+    "description": "AQL-based adapter for openEHR CDRs — EHRbase, Better Platform, DIPS",
+    "file": "12-openehr-integration.md"
+  },
+  {
+    "id": "picorules-studio",
+    "title": "Picorules Studio",
+    "description": "Web IDE for rule authoring, SQL compilation, mock data, and execution",
+    "file": "13-picorules-studio.md"
+  },
+  {
+    "id": "ecosystem",
+    "title": "SDK & Ecosystem",
+    "description": "npm packages, data adapters, tools, and source repositories",
+    "file": "09-ecosystem.md"
+  },
+  {
+    "id": "developers",
+    "title": "Developers",
+    "description": "Core team, contributing guidelines, and project history",
+    "file": "08-developers.md"
+  }
+]

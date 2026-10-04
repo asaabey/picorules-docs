@@ -1,0 +1,64 @@
+<figure class="phenotype-figure">
+  <div class="figure-topline">
+    <span class="eyebrow">From evidence to meaning</span>
+    <span class="figure-number">Fig. 01</span>
+  </div>
+  <svg class="composition" viewBox="0 0 480 440" role="img" aria-labelledby="figure-title figure-description">
+    <title id="figure-title">Composing a clinical phenotype</title>
+    <desc id="figure-description">Three reusable clinical constructs — measurement summaries, patterns over time, and related conditions — contribute to a clinical phenotype.</desc>
+    <g class="guide-lines" fill="none">
+      <path d="M108 84C217 84 188 220 271 220" />
+      <path d="M108 220H271" />
+      <path d="M108 356C217 356 188 220 271 220" />
+      <circle cx="352" cy="220" r="108" />
+      <path d="M352 98v14M352 328v14M230 220h14M460 220h14" />
+    </g>
+    <g class="construct" fill="none">
+      <circle cx="80" cy="84" r="27" />
+      <path d="M66 90h28M70 79v11m10-18v18m10-13v13" />
+      <circle cx="80" cy="220" r="27" />
+      <path d="m65 224 9-10 9 8 12-13" />
+      <circle cx="80" cy="356" r="27" />
+      <circle cx="72" cy="352" r="7" />
+      <circle cx="86" cy="360" r="7" />
+    </g>
+    <g class="node-labels" text-anchor="middle">
+      <text x="80" y="133">Measurements</text>
+      <text x="80" y="269">Patterns over time</text>
+      <text x="80" y="405">Related conditions</text>
+    </g>
+    <circle class="phenotype-core" cx="352" cy="220" r="81" />
+    <g class="phenotype-label" text-anchor="middle">
+      <text x="352" y="211">A clinical</text>
+      <text x="352" y="242" font-style="italic">phenotype</text>
+    </g>
+    <g class="connection-points">
+      <circle cx="108" cy="84" r="3" />
+      <circle cx="108" cy="220" r="3" />
+      <circle cx="108" cy="356" r="3" />
+      <circle cx="244" cy="220" r="4" />
+    </g>
+  </svg>
+  <figcaption>
+    Reusable constructs. A richer clinical description.
+    <span>Illustrative composition</span>
+  </figcaption>
+</figure>
+
+<style>
+  .phenotype-figure { margin: 0; padding: 1.5rem 0 0; width: 100%; }
+  .figure-topline { display: flex; justify-content: space-between; gap: 1rem; padding-bottom: 1.4rem; border-bottom: 1px solid var(--line); }
+  .eyebrow { font-size: .61rem; color: var(--muted); }
+  .figure-number { font-family: var(--serif); color: var(--accent); font-size: .85rem; font-style: italic; }
+  .composition { width: 100%; height: auto; margin-block: .5rem; overflow: visible; }
+  .guide-lines { stroke: var(--illustration); stroke-width: 1; }
+  .construct { stroke: var(--ink); stroke-width: 1.15; }
+  .construct circle { fill: var(--paper); }
+  .node-labels { fill: var(--muted); font-family: var(--sans); font-size: 11px; }
+  .phenotype-core { fill: var(--ink); }
+  .phenotype-label { fill: var(--paper); font-family: var(--serif); font-size: 30px; }
+  .connection-points { fill: var(--accent); }
+  figcaption { border-top: 1px solid var(--line); padding-top: 1rem; color: var(--muted); font-family: var(--serif); font-size: 1rem; line-height: 1.5; }
+  figcaption span { display: block; margin-top: .4rem; font-family: var(--sans); font-size: .61rem; letter-spacing: .06em; }
+  @media (max-width: 1100px) { .eyebrow { letter-spacing: .1em; } }
+</style>
